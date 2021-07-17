@@ -1,4 +1,2 @@
 streamlit
-keras
-tflite
-numpy
+tensorflow
