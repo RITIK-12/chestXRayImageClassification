@@ -1,2 +1,4 @@
 streamlit
-tensorflow
+keras
+--index-url https://google-coral.github.io/py-repo/ tflite_runtime
+numpy
