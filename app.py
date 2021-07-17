@@ -1,6 +1,8 @@
 import streamlit as st
-import tensorflow as tf
+import tflite_runtime.interpreter as tflite
+import numpy as np
 import os
+from keras.preprocessing.image import load_img, img_to_array
 
 
 class_names = ["COVID-19", "Normal", "Pneumonia"]
@@ -9,14 +11,14 @@ class_names = ["COVID-19", "Normal", "Pneumonia"]
 @st.cache(suppress_st_warning=True)
 
 def preprocess_image(path):
-    img = tf.keras.preprocessing.image.load_img(path , grayscale=False, color_mode='rgb', target_size=(224,224,3), interpolation='nearest')
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img = load_img(path , grayscale=False, color_mode='rgb', target_size=(224,224,3), interpolation='nearest')
+    img_array = img_to_array(img)
     img_array = img_array*(1./255)
-    img_array = tf.expand_dims(img_array, 0)
+    img_array = np.expand_dims(img_array, 0)
     return img, img_array
 
 def efnet(img_array):
-    tflite_interpreter = tf.lite.Interpreter(model_path="EfNet_B4_model_final.tflite")
+    tflite_interpreter = tflite.Interpreter(model_path="EfNet_B4_model_final.tflite")
     input_details = tflite_interpreter.get_input_details()
     output_details = tflite_interpreter.get_output_details()
     tflite_interpreter.allocate_tensors()
@@ -48,5 +50,3 @@ if __name__ == '__main__':
 
     if st.button('Get Prediction'):
         st.success(efnet(img_array))
-        
-        
